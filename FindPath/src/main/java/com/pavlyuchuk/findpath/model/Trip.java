@@ -1,16 +1,17 @@
 package com.pavlyuchuk.findpath.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class Route
+public class Trip
 {
     private int id;
-    private List<Stop> route = new ArrayList<Stop>();
-
-    public Route()
+    private List<Calendar> trip = new ArrayList<>();
+    
+    public Trip()
     {
-
+        
     }
 
     public final int getId()
@@ -23,14 +24,15 @@ public class Route
         this.id = id;
     }
 
-    public final List<Stop> getRoute()
+    public final List<Calendar> getTrip()
     {
-        return route;
+        return trip;
     }
 
-    public final void setRoute(List<Stop> route)
+    public final void setTrip(List<Calendar> trip)
     {
-        this.route = route;
+        this.trip = trip;
     }
-
+    
+    
 }
