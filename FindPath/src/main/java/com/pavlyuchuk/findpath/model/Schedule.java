@@ -3,16 +3,44 @@ package com.pavlyuchuk.findpath.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
 public class Schedule
 {
+
+    @Id
+    @GeneratedValue(generator = "increment", strategy = GenerationType.AUTO)
+    @GenericGenerator(name = "increment", strategy = "increment")
     private int id;
+    
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Trip> monday = new ArrayList<>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Trip> tuesday = new ArrayList<>();
-    private List<Trip> wednesday = new ArrayList<>();
-    private List<Trip> thursday = new ArrayList<>();
-    private List<Trip> friday = new ArrayList<>();
-    private List<Trip> saturday= new ArrayList<>();
-    private List<Trip> sunday = new ArrayList<>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Trip> wednesday = new ArrayList<Trip>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Trip> thursday = new ArrayList<Trip>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Trip> friday = new ArrayList<Trip>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Trip> saturday= new ArrayList<Trip>();
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Trip> sunday = new ArrayList<Trip>();
     
     public Schedule()
     {
@@ -48,7 +76,7 @@ public class Schedule
     {
         this.tuesday = tuesday;
     }
-
+/*
     public final List<Trip> getWednesday()
     {
         return wednesday;
@@ -97,7 +125,7 @@ public class Schedule
     public final void setSunday(List<Trip> sunday)
     {
         this.sunday = sunday;
-    }
+    }*/
     
     
 }

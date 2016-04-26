@@ -8,52 +8,61 @@
 		        http://www.springframework.org/schema/context 
 		        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<!-- Beans Declaration -->
-	<bean id="User" class="com.otv.model.User" />
+	<!-- to activate annotations in beans already registered in the application 
+		context -->
+	<context:annotation-config />
 
-	<!-- User Service Declaration -->
-	<bean id="UserService" class="com.otv.user.service.UserService">
-		<property name="userDAO" ref="UserDAO" />
-	</bean>
+	<!-- scans packages to find and register beans within the application context -->
+	<context:component-scan base-package="com.pavlyuchuk.findpath.bean" />
 
-	<!-- User DAO Declaration -->
-	<bean id="UserDAO" class="com.otv.user.dao.UserDAO">
-		<property name="sessionFactory" ref="SessionFactory" />
-	</bean>
-
-	<bean id="DataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/test" />
-		<property name="username" value="root" />
-		<property name="password" value="" />
-	</bean>
-
-	<!-- Session Factory Declaration -->
-	<bean id="SessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="DataSource" />
-		<property name="annotatedClasses">
-			<list>
-				<value>com.otv.model.User</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.hbm2ddl.auto">create</prop>
-			</props>
-		</property>
-	</bean>
-
-	<!-- Enable the configuration of transactional behavior based on annotations -->
+	<!-- turn on spring transaction annotation -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- Transaction Manager is defined -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="SessionFactory" />
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
+	<!-- dataSource configuration -->
+	<bean id="DataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/fp_db" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+	<!-- Session Factory Declaration -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="DataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.pavlyuchuk.findpath.model.Trip</value>
+				<value>com.pavlyuchuk.findpath.model.Stop</value>
+				<value>com.pavlyuchuk.findpath.model.Schedule</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- hibernate.hbm2ddl.auto validate | update | create | create-drop -->
+				<!-- <prop key="hibernate.hbm2ddl.auto">create</prop> -->
+				<!-- Console logging sql query -->
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Beans Declaration -->
+	<!-- <bean id="User" class="com.otv.model.User" /> -->
+
+	<!-- User Service Declaration -->
+	<!-- <bean id="UserService" class="com.otv.user.service.UserService"> <property 
+		name="userDAO" ref="UserDAO" /> </bean> -->
+
+	<!-- User DAO Declaration -->
+	<!-- <bean id="UserDAO" class="com.otv.user.dao.UserDAO"> <property name="sessionFactory" 
+		ref="sessionFactory" /> </bean> -->
 </beans>
