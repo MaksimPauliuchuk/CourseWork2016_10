@@ -9,7 +9,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 public class Stop
 {
-
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")

@@ -99,7 +99,7 @@ public class Main
                     bus = new Bus();
                     bus.setNumber(busName);
                     bus.setDirection(direction);
-                    bus.getRoute().getRoute().add(stops.get(stopId));
+                    bus.getRoute().getStops().add(stops.get(stopId));
                 }
 
                 Calendar[] travels = new Calendar[countTravels];
@@ -135,7 +135,7 @@ public class Main
                             stops.put(stopId, new Stop(stopId, stopName));
                         }
 
-                        bus.getRoute().getRoute().add(stops.get(stopId));
+                        bus.getRoute().getStops().add(stops.get(stopId));
                     }
                     travels = new Calendar[countTravels];
 
@@ -201,7 +201,7 @@ public class Main
             for (Bus bus2 : buses)
             {
                 pw.println(bus2.getNumber() + " " + bus2.getDirection().getName());
-                for (Stop stop : bus2.getRoute().getRoute())
+                for (Stop stop : bus2.getRoute().getStops())
                 {
                     pw.println("\t" + stop.getId() + "\t" + stop.getName());
                 }

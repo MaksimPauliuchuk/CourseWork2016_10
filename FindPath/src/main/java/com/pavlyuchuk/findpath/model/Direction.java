@@ -1,8 +1,19 @@
 package com.pavlyuchuk.findpath.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
 public class Direction
 {
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     private int id;
+    
     private String name;
 
     public Direction()

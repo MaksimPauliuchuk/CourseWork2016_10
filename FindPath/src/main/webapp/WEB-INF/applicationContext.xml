@@ -42,6 +42,9 @@
 				<value>com.pavlyuchuk.findpath.model.Trip</value>
 				<value>com.pavlyuchuk.findpath.model.Stop</value>
 				<value>com.pavlyuchuk.findpath.model.Schedule</value>
+				<value>com.pavlyuchuk.findpath.model.Route</value>
+				<value>com.pavlyuchuk.findpath.model.Direction</value>
+				<value>com.pavlyuchuk.findpath.model.Bus</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">

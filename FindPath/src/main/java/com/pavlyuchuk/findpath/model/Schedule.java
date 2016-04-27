@@ -6,9 +6,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,34 +16,34 @@ public class Schedule
 {
 
     @Id
-    @GeneratedValue(generator = "increment", strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
     private int id;
-    
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Trip> monday = new ArrayList<>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Trip> tuesday = new ArrayList<>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Trip> monday = new ArrayList<Trip>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Trip> tuesday = new ArrayList<Trip>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Trip> wednesday = new ArrayList<Trip>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Trip> thursday = new ArrayList<Trip>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Trip> friday = new ArrayList<Trip>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Trip> saturday= new ArrayList<Trip>();
-    
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Trip> saturday = new ArrayList<Trip>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Trip> sunday = new ArrayList<Trip>();
-    
+
     public Schedule()
     {
-        
+
     }
 
     public final int getId()
@@ -76,7 +75,7 @@ public class Schedule
     {
         this.tuesday = tuesday;
     }
-/*
+
     public final List<Trip> getWednesday()
     {
         return wednesday;
@@ -125,7 +124,6 @@ public class Schedule
     public final void setSunday(List<Trip> sunday)
     {
         this.sunday = sunday;
-    }*/
-    
-    
+    }
+
 }
