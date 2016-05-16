@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Welcome to OTV_JSF_Spring_Hibernate_Project</title>
+</h:head>
+<h:body>
+	<h:form>
+		<p:commandButton id="generate" value="GENERATE"
+			action="#{generateDB.generate}" ajax="false" disabled="false" />
+		<p:commandButton id="test" value="TEST" action="#{generateDB.test}"
+			ajax="false" />
+		<p:commandButton id="test1" value="TEST_CONSOLE" action="#{generateDB.test1}"
+			ajax="false" />
+	</h:form>
+	<p:dataTable var="bus" value="#{generateDB.buses}">
+		<p:column headerText="Id" width="10%">
+			<h:outputText value="#{bus.id}" />
+		</p:column>
+		<p:column headerText="Num" width="10%">
+			<h:outputText value="#{bus.number}" />
+		</p:column>
+		<p:column headerText="Direction" width="30%">
+			<h:outputText value="#{bus.direction.name}" />
+		</p:column>
+		<p:column headerText="Route" width="50%">
+			<p:dataTable var="stop" value="#{bus.route.stops}">
+				<p:column headerText="Id">
+					<h:outputText value="#{stop.id}" />
+				</p:column>
+				<p:column headerText="Stop">
+					<h:outputText value="#{stop.name}" />
+				</p:column>
+			</p:dataTable>
+		</p:column>
+
+	</p:dataTable>
+</h:body>
+</html>

@@ -13,7 +13,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,476 +23,833 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pavlyuchuk.findpath.model.Bus;
 import com.pavlyuchuk.findpath.model.Direction;
 import com.pavlyuchuk.findpath.model.Route;
-import com.pavlyuchuk.findpath.model.Schedule;
 import com.pavlyuchuk.findpath.model.Stop;
 import com.pavlyuchuk.findpath.model.Trip;
 
 @Service("generateDB")
 @ManagedBean(name = "generateDB")
-@RequestScoped
+@ViewScoped
 public class GenerateDBBean
 {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+	@Autowired
+	private SessionFactory sessionFactory;
 
-    public SessionFactory getSessionFactory()
-    {
-        return sessionFactory;
-    }
+	private List<Bus> buses;
 
-    public void setSessionFactory(SessionFactory sessionFactory)
-    {
-        this.sessionFactory = sessionFactory;
-    }
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public void test()
+	{
+		boolean printInFile = false;
 
-    @Transactional
-    public String test()
-    {
-        Trip trip = new Trip();
-        Trip trip2 = new Trip();
+		buses = new ArrayList<>();
+		Set<Bus> busesSet = new HashSet<>();
+		busesSet.addAll(getSessionFactory().getCurrentSession().createCriteria(Bus.class).list());
+		buses.addAll(busesSet);
+		buses.sort((o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
 
-        for (int i = 0; i < 10; i++)
-        {
-            trip.getTrip().add(Calendar.getInstance());
-            trip2.getTrip().add(Calendar.getInstance());
-        }
+		for (Bus bus2 : buses)
+		{
+			if (printInFile)
+			{
+				System.out.println(bus2.getNumber() + " " + bus2.getDirection().getName());
+			}
+			for (Stop stop : bus2.getRoute().getStops())
+			{
+				if (printInFile)
+				{
+					System.out.println("\t" + stop.getId() + "\t" + stop.getName());
+				}
+			}
 
-        getSessionFactory().getCurrentSession().save(trip);
-        getSessionFactory().getCurrentSession().save(trip2);
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tMonday");
+			}
+			for (Trip trip : bus2.getSchedule().getMonday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        Stop stop = new Stop();
-        stop.setName("dasasdsa");
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tTuesday");
+			}
+			for (Trip trip : bus2.getSchedule().getTuesday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
 
-        getSessionFactory().getCurrentSession().save(stop);
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        Schedule schedule = new Schedule();
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tWednesday");
+			}
+			for (Trip trip : bus2.getSchedule().getWednesday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
 
-        schedule.getMonday().add(trip);
-        schedule.getMonday().add(trip2);
-        schedule.getFriday().add(new Trip());
-        schedule.getSaturday().add(new Trip());
-        schedule.getSunday().add(new Trip());
-        schedule.getThursday().add(new Trip());
-        schedule.getTuesday().add(trip2);
-        schedule.getWednesday().add(new Trip());
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        getSessionFactory().getCurrentSession().save(schedule);
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tThursday");
+			}
+			for (Trip trip : bus2.getSchedule().getThursday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        Route route = new Route();
-        route.getStops().add(stop);
-        Stop stop1 = new Stop();
-        stop1.setName("dffasdfasfdfd");
-        route.getStops().add(stop1);
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tFriday");
+			}
+			for (Trip trip : bus2.getSchedule().getFriday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        getSessionFactory().getCurrentSession().save(route);
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tSaturday");
+			}
+			for (Trip trip : bus2.getSchedule().getSaturday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
 
-        Direction direction = new Direction();
-        direction.setName("dirdirdir");
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println("\tSunday");
+			}
+			for (Trip trip : bus2.getSchedule().getSunday())
+			{
+				if (printInFile)
+				{
+					System.out.print("\t\t\t");
+				}
+				for (Calendar calendar : trip.getTrip())
+				{
+					if (calendar != null)
+					{
+						if (printInFile)
+						{
+							System.out.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+									calendar.get(Calendar.MINUTE));
+						}
+					}
+					else
+					{
+						if (printInFile)
+						{
+							System.out.printf("--:-- ");
+						}
+					}
+				}
 
-        getSessionFactory().getCurrentSession().save(direction);
+				if (printInFile)
+				{
+					System.out.println();
+				}
+			}
+			if (printInFile)
+			{
+				System.out.println();
+				System.out.println();
+			}
+		}
+	}
 
-        Bus bus = new Bus();
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public void test1()
+	{
+		List<Stop> stops;
 
-        bus.setDirection(direction);
-        bus.setRoute(route);
-        bus.setSchedule(schedule);
-        bus.setNumber("dasdas");
+		stops = getSessionFactory().getCurrentSession().createCriteria(Stop.class).list();
 
-        getSessionFactory().getCurrentSession().save(bus);
+		Set<Stop> stopSet = new HashSet<>();
+		stopSet.addAll(stops);
+		stops.clear();
+		stops.addAll(stopSet);
+		stops.sort((o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
 
-        System.out.println("Test");
-        return "OK";
-    }
+		for (Stop stop : stops)
+		{
+			System.out.println(stop.getId() + " " + stop.getName());
+			for (Route route : stop.getRoutes())
+			{
+				System.out.println("\t" + route.getId() + " " + route.getBus().getNumber());
+			}
+		}
 
-    @Transactional
-    public String test1()
-    {
-        Schedule schedule = (Schedule) getSessionFactory().getCurrentSession().get(Schedule.class, 2);
+	}
 
-        System.out.println(schedule.getId());
-        List<Trip> monday = new ArrayList<Trip>();
-        monday.addAll(schedule.getMonday());
+	@Transactional
+	public void generate()
+	{
+		String path = "c:\\Program Files\\eclipse\\rasp.csv";
+		boolean printInFile = true;
+		Set<String> routeNames = new HashSet<>();
 
-        for (Trip trip : monday)
-        {
-            for (Calendar calendar : trip.getTrip())
-            {
-                System.out.println(calendar.get(Calendar.HOUR_OF_DAY));
-            }
-        }
+		Map<Integer, Stop> stops = new HashMap<>();
+		Map<Integer, Direction> directions = new HashMap<>();
 
-        Route route = (Route) getSessionFactory().getCurrentSession().get(Route.class, 1);
+		List<Bus> buses = new ArrayList<>();
 
-        for (Stop stop : route.getStops())
-        {
-            System.out.println(stop.getName());
-        }
+		try (PrintWriter pw = new PrintWriter(new File("convertedRasp.txt"));
+				Scanner sc = new Scanner(new File(path)))
+		{
+			String cLine;
+			String[] splitString;
+			Integer routeId = 1;
+			int countTravels;
+			int countI = 0;
 
-        Bus bus = (Bus) getSessionFactory().getCurrentSession().get(Bus.class, 1);
+			String busName;
+			String directionsName;
+			String stopName;
+			double lat;
+			double len;
+			String day;
+			Direction direction = new Direction();
+			Integer stopId;
 
-        System.out.println(bus.getDirection().getName());
+			while (sc.hasNextLine())
+			{
+				cLine = sc.nextLine();
+				splitString = cLine.split(";");
 
-        System.out.println("Test");
-        return "OK";
-    }
+				countTravels = (splitString.length - 1) - 5;
 
-    @Transactional
-    public void generate()
-    {
-        Set<String> routeNames = new HashSet<>();
+				for (int i = 0; i < splitString.length; i++)
+				{
+					System.out.println(splitString[i]);
+				}
 
-        Map<Integer, Stop> stops = new HashMap<>();
-        Map<Integer, Direction> directions = new HashMap<>();
+				System.out.println(countTravels);
 
-        List<Bus> buses = new ArrayList<>();
+				ArrayList<Calendar[]> travelMatrix = new ArrayList<>();
 
-        try (Scanner sc = new Scanner(new File("/home/emergency/rasp.csv")); PrintWriter pw = new PrintWriter(new File("outBEAN.txt")))
-        {
-            String cLine;
-            String[] splitString;
-            Integer routeId = 1;
-            int countTravels;
-            int countI = 0;
+				busName = splitString[0];
+				day = splitString[1];
+				directionsName = splitString[2];
+				stopName = splitString[3];
+				stopId = Integer.parseInt(splitString[4]);
+				lat = Double.parseDouble(splitString[5].split(",")[0]);
+				len = Double.parseDouble(splitString[5].split(",")[1]);
+				boolean busExist = false;
 
-            String busName;
-            String directionsName;
-            String stopName;
-            String day;
-            Direction direction = new Direction();
-            Integer stopId;
+				if (!routeNames.contains(directionsName))
+				{
+					direction = new Direction(routeId, directionsName);
+					// getSessionFactory().getCurrentSession().save(direction);
+					directions.put(routeId, direction);
+					routeNames.add(directionsName);
+					routeId++;
+				}
+				else
+				{
+					for (Direction directionIterator : directions.values())
+					{
+						if (directionsName.equals(directionIterator.getName()))
+						{
+							direction = directionIterator;
+						}
+					}
+				}
 
-            while (sc.hasNextLine())
-            {
-                cLine = sc.nextLine();
-                splitString = cLine.split(";");
+				if (stops.get(stopId) == null)
+				{
+					Stop stop = new Stop(stopId, stopName, lat, len);
+					// getSessionFactory().getCurrentSession().save(stop);
+					stops.put(stopId, stop);
+				}
 
-                countTravels = (splitString.length - 1) - 4;
+				Bus bus = null;
 
-                ArrayList<Calendar[]> travelMatrix = new ArrayList<>();
+				for (Bus bus1 : buses)
+				{
+					if (busName.equals(bus1.getNumber()) && directionsName.equals(bus1.getDirection().getName()))
+					{
+						bus = bus1;
+						busExist = true;
+						break;
+					}
+				}
 
-                busName = splitString[0];
-                day = splitString[1];
-                directionsName = splitString[2];
-                stopName = splitString[3];
-                stopId = Integer.parseInt(splitString[4]);
-                boolean busExist = false;
+				if (!busExist)
+				{
+					bus = new Bus();
+					bus.setNumber(busName);
+					bus.setDirection(direction);
+					bus.getRoute().addStop(stops.get(stopId));
+					bus.getRoute().setBus(bus);
+				}
 
-                if (!routeNames.contains(directionsName))
-                {
-                    direction = new Direction(routeId, directionsName);
-                    //getSessionFactory().getCurrentSession().save(direction);
-                    directions.put(routeId, direction);
-                    routeNames.add(directionsName);
-                    routeId++;
-                }
-                else
-                {
-                    for (Direction directionIterator : directions.values())
-                    {
-                        if (directionsName.equals(directionIterator.getName()))
-                        {
-                            direction = directionIterator;
-                        }
-                    }
-                }
+				Calendar[] travels = new Calendar[countTravels];
 
-                if (stops.get(stopId) == null)
-                {
-                    Stop stop =  new Stop(stopId, stopName);
-                    //getSessionFactory().getCurrentSession().save(stop);
-                    stops.put(stopId, stop);
-                }
+				for (int i = 6; i < splitString.length; i++)
+				{
+					if (splitString[i].equals("null"))
+					{
+						travels[i - 6] = null;
+					}
+					else
+					{
+						String[] splitTime = splitString[i].split(":");
+						travels[i - 6] = Calendar.getInstance();
+						travels[i - 6].set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTime[0]));
+						travels[i - 6].set(Calendar.MINUTE, Integer.parseInt(splitTime[1]));
+					}
+				}
 
-                Bus bus = null;
+				travelMatrix.add(travels);
 
-                for (Bus bus1 : buses)
-                {
-                    if (busName.equals(bus1.getNumber()) && directionsName.equals(bus1.getDirection().getName()))
-                    {
-                        bus = bus1;
-                        busExist = true;
-                        break;
-                    }
-                }
+				while ((cLine = sc.nextLine()).length() != 0)
+				{
+					countI++;
+					splitString = cLine.split(";");
 
-                if (!busExist)
-                {
-                    bus = new Bus();
-                    bus.setNumber(busName);
-                    bus.setDirection(direction);
-                    bus.getRoute().getStops().add(stops.get(stopId));
-                }
+					if (!busExist)
+					{
+						stopName = splitString[3];
+						stopId = Integer.parseInt(splitString[4]);
+						lat = Double.parseDouble(splitString[5].split(",")[0]);
+						len = Double.parseDouble(splitString[5].split(",")[1]);
 
-                Calendar[] travels = new Calendar[countTravels];
+						if (stops.get(stopId) == null)
+						{
+							stops.put(stopId, new Stop(stopId, stopName, lat, len));
+						}
 
-                for (int i = 5; i < splitString.length; i++)
-                {
-                    if (splitString[i].equals("null"))
-                    {
-                        travels[i - 5] = null;
-                    }
-                    else
-                    {
-                        String[] splitTime = splitString[i].split(":");
-                        travels[i - 5] = Calendar.getInstance();
-                        travels[i - 5].set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTime[0]));
-                        travels[i - 5].set(Calendar.MINUTE, Integer.parseInt(splitTime[1]));
-                    }
-                }
+						bus.getRoute().addStop(stops.get(stopId));
+					}
+					travels = new Calendar[countTravels];
 
-                travelMatrix.add(travels);
+					for (int i = 6; i < splitString.length; i++)
+					{
+						if (splitString[i].equals("null"))
+						{
+							travels[i - 6] = null;
+						}
+						else
+						{
+							String[] splitTime = splitString[i].split(":");
+							travels[i - 6] = Calendar.getInstance();
+							travels[i - 6].set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTime[0]));
+							travels[i - 6].set(Calendar.MINUTE, Integer.parseInt(splitTime[1]));
+						}
+					}
+					travelMatrix.add(travels);
+				}
+				List<Trip> trips = new ArrayList<Trip>();
+				for (int j = 0; j < countTravels; j++)
+				{
+					Trip trip = new Trip();
+					for (int i = 0; i < travelMatrix.size(); i++)
+					{
+						trip.getTrip().add(travelMatrix.get(i)[j]);
+					}
+					trips.add(trip);
+				}
 
-                while ((cLine = sc.nextLine()).length() != 0)
-                {
-                    countI++;
-                    splitString = cLine.split(";");
+				if (day.equals("Р"))
+				{
+					bus.getSchedule().setMonday(trips);
+					bus.getSchedule().setTuesday(trips);
+					bus.getSchedule().setWednesday(trips);
+					bus.getSchedule().setThursday(trips);
+					bus.getSchedule().setFriday(trips);
+				}
 
-                    if (!busExist)
-                    {
-                        stopName = splitString[3];
-                        stopId = Integer.parseInt(splitString[4]);
+				if (day.equals("В"))
+				{
+					bus.getSchedule().setSunday(trips);
+					bus.getSchedule().setSaturday(trips);
+				}
 
-                        if (stops.get(stopId) == null)
-                        {
-                            stops.put(stopId, new Stop(stopId, stopName));
-                        }
+				if (day.equals("Р,В"))
+				{
+					bus.getSchedule().setMonday(trips);
+					bus.getSchedule().setTuesday(trips);
+					bus.getSchedule().setWednesday(trips);
+					bus.getSchedule().setThursday(trips);
+					bus.getSchedule().setFriday(trips);
+					bus.getSchedule().setSunday(trips);
+					bus.getSchedule().setSaturday(trips);
+				}
 
-                        bus.getRoute().getStops().add(stops.get(stopId));
-                    }
-                    travels = new Calendar[countTravels];
+				if (!busExist)
+				{
+					buses.add(bus);
+				}
+			}
 
-                    for (int i = 5; i < splitString.length; i++)
-                    {
-                        if (splitString[i].equals("null"))
-                        {
-                            travels[i - 5] = null;
-                        }
-                        else
-                        {
-                            String[] splitTime = splitString[i].split(":");
-                            travels[i - 5] = Calendar.getInstance();
-                            travels[i - 5].set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTime[0]));
-                            travels[i - 5].set(Calendar.MINUTE, Integer.parseInt(splitTime[1]));
-                        }
-                    }
-                    travelMatrix.add(travels);
-                }
-                List<Trip> trips = new ArrayList<Trip>();
-                for (int j = 0; j < countTravels; j++)
-                {
-                    Trip trip = new Trip();
-                    for (int i = 0; i < travelMatrix.size(); i++)
-                    {
-                        trip.getTrip().add(travelMatrix.get(i)[j]);
-                    }
-                    trips.add(trip);
-                }
+			for (Bus bus2 : buses)
+			{
+				if (printInFile)
+				{
+					pw.println(bus2.getNumber() + " " + bus2.getDirection().getName());
+				}
+				getSessionFactory().getCurrentSession().save(bus2.getDirection());
+				for (Stop stop : bus2.getRoute().getStops())
+				{
+					if (printInFile)
+					{
+						pw.println("\t" + stop.getId() + "\t" + stop.getName());
+					}
+					getSessionFactory().getCurrentSession().save(stop);
+				}
+				getSessionFactory().getCurrentSession().save(bus2.getRoute());
 
-                if (day.equals("Р"))
-                {
-                    bus.getSchedule().setMonday(trips);
-                    bus.getSchedule().setTuesday(trips);
-                    bus.getSchedule().setWednesday(trips);
-                    bus.getSchedule().setThursday(trips);
-                    bus.getSchedule().setFriday(trips);
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tMonday");
+				}
+				for (Trip trip : bus2.getSchedule().getMonday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                if (day.equals("В"))
-                {
-                    bus.getSchedule().setSunday(trips);
-                    bus.getSchedule().setSaturday(trips);
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tTuesday");
+				}
+				for (Trip trip : bus2.getSchedule().getTuesday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
 
-                if (day.equals("Р,В"))
-                {
-                    bus.getSchedule().setMonday(trips);
-                    bus.getSchedule().setTuesday(trips);
-                    bus.getSchedule().setWednesday(trips);
-                    bus.getSchedule().setThursday(trips);
-                    bus.getSchedule().setFriday(trips);
-                    bus.getSchedule().setSunday(trips);
-                    bus.getSchedule().setSaturday(trips);
-                }
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                if (!busExist)
-                {
-                    buses.add(bus);
-                }
-            }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tWednesday");
+				}
+				for (Trip trip : bus2.getSchedule().getWednesday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
 
-            for (Bus bus2 : buses)
-            {
-                pw.println(bus2.getNumber() + " " + bus2.getDirection().getName());
-                getSessionFactory().getCurrentSession().save(bus2.getDirection());
-                for (Stop stop : bus2.getRoute().getStops())
-                {
-                    pw.println("\t" + stop.getId() + "\t" + stop.getName());
-                    getSessionFactory().getCurrentSession().save(stop);
-                }
-                getSessionFactory().getCurrentSession().save(bus2.getRoute());
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                pw.println();
-                pw.println("\tMonday");
-                for (Trip trip : bus2.getSchedule().getMonday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tThursday");
+				}
+				for (Trip trip : bus2.getSchedule().getThursday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                pw.println();
-                pw.println("\tTuesday");
-                for (Trip trip : bus2.getSchedule().getTuesday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tFriday");
+				}
+				for (Trip trip : bus2.getSchedule().getFriday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                pw.println();
-                pw.println("\tWednesday");
-                for (Trip trip : bus2.getSchedule().getWednesday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tSaturday");
+				}
+				for (Trip trip : bus2.getSchedule().getSaturday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
 
-                pw.println();
-                pw.println("\tThursday");
-                for (Trip trip : bus2.getSchedule().getThursday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+				if (printInFile)
+				{
+					pw.println();
+					pw.println("\tSunday");
+				}
+				for (Trip trip : bus2.getSchedule().getSunday())
+				{
+					if (printInFile)
+					{
+						pw.print("\t\t\t");
+					}
+					for (Calendar calendar : trip.getTrip())
+					{
+						if (calendar != null)
+						{
+							if (printInFile)
+							{
+								pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
+										calendar.get(Calendar.MINUTE));
+							}
+						}
+						else
+						{
+							if (printInFile)
+							{
+								pw.printf("--:-- ");
+							}
+						}
+					}
+					getSessionFactory().getCurrentSession().save(trip);
 
-                pw.println();
-                pw.println("\tFriday");
-                for (Trip trip : bus2.getSchedule().getFriday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+					if (printInFile)
+					{
+						pw.println();
+					}
+				}
+				if (printInFile)
+				{
+					pw.println();
+					pw.println();
+				}
 
-                pw.println();
-                pw.println("\tSaturday");
-                for (Trip trip : bus2.getSchedule().getSaturday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
+				getSessionFactory().getCurrentSession().save(bus2.getSchedule());
+				getSessionFactory().getCurrentSession().save(bus2);
+			}
 
-                pw.println();
-                pw.println("\tSunday");
-                for (Trip trip : bus2.getSchedule().getSunday())
-                {
-                    pw.print("\t\t\t");
-                    for (Calendar calendar : trip.getTrip())
-                    {
-                        if (calendar != null)
-                        {
-                            pw.printf("%02d:%02d ", calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE));
-                        }
-                        else
-                        {
-                            pw.printf("--:-- ");
-                        }
-                    }
-                    getSessionFactory().getCurrentSession().save(trip);
-                    pw.println();
-                }
-                pw.println();
-                pw.println();
+			System.out.println(countI);
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-                getSessionFactory().getCurrentSession().save(bus2.getSchedule());
-                getSessionFactory().getCurrentSession().save(bus2);
-            }
-            
-            
-            
-            
-            System.out.println(countI);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-    }
+	public SessionFactory getSessionFactory()
+	{
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory)
+	{
+		this.sessionFactory = sessionFactory;
+	}
+
+	public List<Bus> getBuses()
+	{
+		return buses;
+	}
+
+	public void setBuses(List<Bus> buses)
+	{
+		this.buses = buses;
+	}
 }

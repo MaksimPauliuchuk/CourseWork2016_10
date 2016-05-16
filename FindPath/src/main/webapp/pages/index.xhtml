@@ -1,47 +1,223 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:head>
-	<title>Welcome to OTV_JSF_Spring_Hibernate_Project</title>
+	<title>Find Path</title>
+	<script src="http://maps.google.com/maps/api/js?sensor=false"
+		type="text/javascript"></script>
+	<style>
+*, .ui-widget-content {
+	margin: 0;
+	padding: 0;
+}
+
+.ui-tabs .ui-tabs-panel {
+	padding: 0;
+}
+
+.ui-dialog.ui-widget-content .ui-dialog-content {
+	padding: 0;
+}
+
+.ui-widget-header {
+	background: #55c7ff;
+}
+
+.ui-datatable-tablewrapper .ui-state-default {
+	background-color: #8fdaff;
+	background-image: none;
+}
+
+.ui-datatable-tablewrapper .ui-calendar .ui-state-default {
+	background-color: #f5f5f5;
+	background-image: none;
+}
+
+.ui-datatable tbody td {
+	padding: 4px 0px;
+}
+
+.ui-datatable-data .ui-datatable-even, .ui-datatable-data .ui-datatable-odd
+	{
+	text-align: center;
+}
+
+.hasDatepicker {
+	text-align: center;
+}
+
+.ui-hidden-container .ui-datatable-scrollable-header {
+	background: #f2f2f2;
+}
+</style>
 </h:head>
 <h:body>
-	<h:form>
-		<table>
-			<tr>
-				<td><h:outputLabel for="id" value="Id : " /></td>
-				<td><p:inputText id="id" value="#{userMB.id}">
-						<f:converter converterId="javax.faces.Integer" />
-						<p:ajax event="blur" update="idMsg" />
-					</p:inputText> <p:message id="idMsg" for="id" display="icon" /></td>
-			</tr>
-			<tr>
-				<td><h:outputLabel for="name" value="Name : " /></td>
-				<td><p:inputText id="name" value="#{userMB.name}">
-						<f:validateLength minimum="5" />
-						<p:ajax event="blur" update="nameMsg" />
-					</p:inputText> <p:message id="nameMsg" for="name" display="icon" /></td>
-			</tr>
-			<tr>
-				<td><h:outputLabel for="surname" value="Surname : " /></td>
-				<td><p:inputText id="surname" value="#{userMB.surname}">
-						<f:validateLength minimum="5" />
-						<p:ajax event="blur" update="surnameMsg" />
-					</p:inputText> <p:message id="surnameMsg" for="surname" display="icon" /></td>
-			</tr>
-			<tr>
-				<td><p:commandButton id="addUser" value="Add"
-						action="#{userMB.addUser}" ajax="false" /></td>
-				<td><p:commandButton id="reset" value="Reset"
-						action="#{userMB.reset}" ajax="false" /></td>
-				<td><p:commandButton id="test" value="TEST" 
-						action="#{generateDB.test}" ajax="false" /></td>
-			</tr>
-		</table>
-				<td><p:commandButton id="test1" value="TEST1" 
-						action="#{generateDB.test1}" ajax="false" /></td>
-				<td><p:commandButton id="generate" value="GENERATE" 
-						action="#{generateDB.generate}" ajax="false" /></td>
+	<h:form id="form">
+		<p:tabView>
+			<p:tab title="Find Path">
+				<p:outputPanel style="text-align:center">
+					<br />
+					<p:panelGrid columns="2"
+						style="margin-left:auto; margin-right:auto">
+						<f:facet name="header">
+							<p:outputLabel value="Выберите остановку" />
+						</f:facet>
+						<p:outputLabel value="Откуда" />
+						<p:autoComplete value="#{app.stopFrom}"
+							completeMethod="#{app.completeStop}" />
+						<p:outputLabel value="Куда" />
+						<p:autoComplete value="#{app.stopTo}"
+							completeMethod="#{app.completeStop}" />
+					</p:panelGrid>
+					<p:commandButton value="Найти" actionListener="#{app.findPath}"
+						update="without, withone" />
+
+					<p:dataTable id="without" var="transfer"
+						value="#{app.withoutTransfer}" style="text-align:center"
+						emptyMessage="Путей не найдено">
+						<f:facet name="header">
+							<p:outputLabel value="Без пересадок" />
+						</f:facet>
+						<p:column width="10%" headerText="Автобус">
+							<p:outputLabel value="#{transfer.bus.number}" />
+						</p:column>
+						<p:column width="10%" headerText="Направление">
+							<p:outputLabel value="#{transfer.bus.direction.name}" />
+						</p:column>
+					</p:dataTable>
+
+					<br />
+
+					<p:dataTable id="withone" var="transfers"
+						value="#{app.withOneTransfer}" style="text-align:center"
+						emptyMessage="Путей не найдено">
+						<f:facet name="header">
+							<p:outputLabel value="С одной пересадкой" />
+						</f:facet>
+						<p:column>
+							<p:dataTable var="transfer" value="#{transfers}"
+								style="text-align:center" emptyMessage="Путей не найдено">
+								<p:column width="10%" headerText="Автобус">
+									<p:outputLabel value="#{transfer.bus.number}" />
+								</p:column>
+								<p:column width="10%" headerText="Направление">
+									<p:outputLabel value="#{transfer.bus.direction.name}" />
+								</p:column>
+							</p:dataTable>
+						</p:column>
+					</p:dataTable>
+				</p:outputPanel>
+			</p:tab>
+			<p:tab title="All Stops">
+				<p:gmap center="52.09762139999999,23.734050300000035" zoom="13"
+					type="HYBRID"
+					style="width:100%;height:93%;margin:0px; padding: 0px;"
+					model="#{app.simpleModel}">
+
+					<p:ajax event="overlaySelect" listener="#{app.onMarkerSelect}" />
+
+					<p:gmapInfoWindow id="infoWindow">
+						<p:outputPanel
+							style="text-align: center; display: block; margin: auto; width:140px">
+							<h:outputText value="#{app.marker.title}" />
+						</p:outputPanel>
+					</p:gmapInfoWindow>
+				</p:gmap>
+			</p:tab>
+			<p:tab title="Find Stop">
+				<p:outputPanel style="text-align:center">
+					<br />
+					<p:panelGrid columns="2"
+						style="margin-left:auto; margin-right:auto">
+						<f:facet name="header">
+							<p:outputLabel value="Выберите остановку" />
+						</f:facet>
+						<p:outputLabel value="Название" />
+						<p:autoComplete value="#{app.findStop}"
+							completeMethod="#{app.completeStop}" />
+					</p:panelGrid>
+					<p:commandButton value="Найти" actionListener="#{app.findeStop}"
+						update="stop" />
+
+					<p:dataTable id="stop" var="stop" value="#{app.findedStops}"
+						style="text-align:center" emptyMessage="Остановок не найдено">
+						<f:facet name="header">
+							<p:outputLabel value="Остановки" />
+						</f:facet>
+						<p:column width="30%" headerText="Остановка">
+							<p:outputLabel value="#{stop.name}" />
+						</p:column>
+						<p:column width="70%" headerText="Транспорт">
+							<p:dataTable var="bus" value="#{stop.buses}"
+								style="text-align:center" emptyMessage="Путей не найдено">
+								<p:column width="20%" headerText="Автобус">
+									<p:outputLabel value="#{bus.name}" />
+								</p:column>
+								<p:column width="60%" headerText="Направление">
+									<p:outputLabel value="#{bus.direction}" />
+								</p:column>
+								<p:column width="20%" headerText="Время">
+									<p:calendar size="2" id="time" value="#{bus.time.time}"
+										pattern="HH:mm" timeOnly="true" />
+								</p:column>
+							</p:dataTable>
+						</p:column>
+					</p:dataTable>
+				</p:outputPanel>
+			</p:tab>
+			<p:tab title="Buses">
+				<p:dataTable id="bus" var="bus" value="#{app.buses}"
+					style="text-align:center" emptyMessage="Транспорта не найдено">
+					<f:facet name="header">
+						<p:outputLabel value="Транспорт" />
+					</f:facet>
+					<p:column width="30%" headerText="Авто">
+						<p:outputLabel value="#{bus.number}" />
+					</p:column>
+					<p:column width="60%" headerText="Направление">
+						<p:outputLabel value="#{bus.direction.name}" />
+					</p:column>
+					<p:column style="width:32px;text-align: center">
+						<p:commandButton update=":form:busDetail"
+							oncomplete="PF('busDialog').show()" icon="ui-icon-search"
+							title="View">
+							<f:setPropertyActionListener value="#{bus}"
+								target="#{app.selectedBus}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</p:tab>
+		</p:tabView>
+
+		<p:dialog header="Bus Info" widgetVar="busDialog" position="top"
+			closeOnEscape="true" draggable="false" width="100%" height="100%"
+			modal="true" showEffect="fade" hideEffect="fade" responsive="false"
+			resizable="false">
+			<p:outputPanel id="busDetail" style="text-align:center;">
+				<p:gmap center="52.09762139999999,23.734050300000035" zoom="13"
+					type="HYBRID"
+					style="width:100%;height:300px;margin:0px; padding: 0px;"
+					model="#{app.busModel}">
+
+					<p:ajax event="overlaySelect" listener="#{app.onMarkerSelectBus}" />
+
+					<p:gmapInfoWindow id="infoWindow">
+						<p:outputPanel
+							style="text-align: center; display: block; margin: auto; width:140px">
+							<h:outputText value="#{app.marker.title}" />
+						</p:outputPanel>
+					</p:gmapInfoWindow>
+				</p:gmap>
+				<p:dataTable id="stop" var="stop" scrollable="true"
+					scrollHeight="250" value="#{app.selectedBus.route.stops}">
+					<p:column width="60%" headerText="Остановки">
+						<p:outputLabel value="#{stop.name}" />
+					</p:column>
+				</p:dataTable>
+			</p:outputPanel>
+		</p:dialog>
 	</h:form>
 </h:body>
 </html>

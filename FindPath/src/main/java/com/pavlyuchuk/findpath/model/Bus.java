@@ -2,6 +2,7 @@ package com.pavlyuchuk.findpath.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -14,79 +15,92 @@ import org.hibernate.annotations.GenericGenerator;
 public class Bus
 {
 
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
-    private int id;
-    
-    private String number;
-    
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "route_id")
-    private Route route = new Route();
-    
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "direction_id")
-    private Direction direction;
-    
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "schedule_id")
-    private Schedule schedule = new Schedule();
-    
-    public Bus()
-    {
+	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
+	private int id;
 
-    }
+	private String number;
 
-    public final int getId()
-    {
-        return id;
-    }
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Route route = new Route();
 
-    public final void setId(int id)
-    {
-        this.id = id;
-    }
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "direction_id")
+	private Direction direction;
 
-    public final String getNumber()
-    {
-        return number;
-    }
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "schedule_id")
+	private Schedule schedule = new Schedule();
 
-    public final void setNumber(String number)
-    {
-        this.number = number;
-    }
+	public Bus()
+	{
 
-    public final Route getRoute()
-    {
-        return route;
-    }
+	}
 
-    public final void setRoute(Route route)
-    {
-        this.route = route;
-    }
+	public final int getId()
+	{
+		return id;
+	}
 
-    public Direction getDirection()
-    {
-        return direction;
-    }
+	public final void setId(int id)
+	{
+		this.id = id;
+	}
 
-    public void setDirection(Direction direction)
-    {
-        this.direction = direction;
-    }
+	public final String getNumber()
+	{
+		return number;
+	}
 
-    public final Schedule getSchedule()
-    {
-        return schedule;
-    }
+	public final void setNumber(String number)
+	{
+		this.number = number;
+	}
 
-    public final void setSchedule(Schedule schedule)
-    {
-        this.schedule = schedule;
-    }
+	public final Route getRoute()
+	{
+		return route;
+	}
 
+	public final void setRoute(Route route)
+	{
+		this.route = route;
+	}
+
+	public Direction getDirection()
+	{
+		return direction;
+	}
+
+	public void setDirection(Direction direction)
+	{
+		this.direction = direction;
+	}
+
+	public final Schedule getSchedule()
+	{
+		return schedule;
+	}
+
+	public final void setSchedule(Schedule schedule)
+	{
+		this.schedule = schedule;
+	}
+
+	public void addRoute(Route route)
+	{
+		route.setBus(this);
+		this.route = route;
+	}
+
+	public void removeRoute()
+	{
+		if (route != null)
+		{
+			route.setBus(null);
+			this.route = null;
+		}
+	}
 
 }
